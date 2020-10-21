@@ -1,5 +1,5 @@
-const {Web3, Contract} = require("../src/web3")
-const Redis = require("../src/redis")
+const {Web3, Contract} = require("./web3")
+const Redis = require("./redis")
 const Batch = require("batch")
 
 const MAX_THREADS = 100

@@ -58,10 +58,12 @@ app.get("/", apiLimiter, async (req, res) => {
       ])
       const blocks = await redis("mget", blockNumbers)
       avgPrice =
-        blocks.map((b) => {
-          const {price} = JSON.parse(b)
-          return parseInt(price)
-        }).reduce((o, a) => o + a, 0) / blocks.length;
+        blocks
+          .map((b) => {
+            const {price} = JSON.parse(b)
+            return parseInt(price)
+          })
+          .reduce((o, a) => o + a, 0) / blocks.length
     } catch (e) {
       avgPrice = 0
     }
@@ -86,7 +88,7 @@ app.get("/", apiLimiter, async (req, res) => {
   res.json({price: data})
 })
 
-const port = "5000"
+const port = process.env.PORT
 app.listen(port, () => {
   console.log(`listening on port ${port}`)
 })

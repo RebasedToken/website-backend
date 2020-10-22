@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "www",
-      script: "./bin/www.js",
+      script: "sudo node ./bin/www.js",
       autorestart: true,
       watch: true,
       max_memory_restart: "1G",

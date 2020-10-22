@@ -2,7 +2,7 @@ const express = require("express")
 const cors = require("cors")
 const bodyParser = require("body-parser")
 const rateLimit = require("express-rate-limit")
-const stats = require("../src/stats");
+const {getStats, getTotalSupply} = require("../src/stats")
 const apiLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
   max: 30,
@@ -16,7 +16,10 @@ app.set("trust proxy", 1)
 app.use(cors())
 app.use(bodyParser.json())
 app.get("/", apiLimiter, async (req, res) => {
-  res.json(await stats())
+  res.json(await getStats())
+})
+app.get("/total-supply", apiLimiter, async (req, res) => {
+  res.json(await getTotalSupply())
 })
 app.listen(port, () => {
   console.log(`listening on port ${port}`)

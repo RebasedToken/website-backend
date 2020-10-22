@@ -1,11 +1,11 @@
-const Redis = require("../src/redis")
 const moment = require("moment")
-const BN = require('bn.js');
-const Web3 = require("web3")
+const BN = require("bn.js")
+const Redis = require("./redis")
+const {web3, contracts} = require("./contracts")
 
 const redis = Redis()
 
-module.exports = async function () {
+exports.getStats = async function () {
   const data = {}
   data["1d"] = await get1d()
   data["30d"] = await get30d()
@@ -51,7 +51,7 @@ async function getAll() {
 async function get(intervals, getFromToForInterval) {
   const xs = []
   const prices = []
-  const supplies  = []
+  const supplies = []
 
   for (i = 0; i < intervals; i++) {
     const {x, from, to} = getFromToForInterval(i)
@@ -70,17 +70,22 @@ async function get(intervals, getFromToForInterval) {
         price = price.add(bn(p))
         supply = supply.add(bn(s))
       })
-      const len = bn(blocks.length.toString());
+      const len = bn(blocks.length.toString())
       price = price.div(len)
       supply = supply.div(len)
     } catch (e) {}
 
     xs.unshift(x)
-    prices.unshift(Web3.utils.fromWei(price, 'ether').toString())
-    supplies.unshift(Web3.utils.fromWei(supply, 'gwei').toString())
+    prices.unshift(web3.utils.fromWei(price, "ether").toString())
+    supplies.unshift(web3.utils.fromWei(supply, "gwei").toString())
   }
 
   return {x: xs, p: prices, s: supplies}
+}
+
+exports.getTotalSupply = async function () {
+  const supply = await contracts.rebasedV2.contract.read("totalSupply")
+  return parseInt(web3.utils.fromWei(supply, "gwei").toString())
 }
 
 function bn(n) {

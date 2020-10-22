@@ -18,22 +18,20 @@ exports.Contract = class {
     this.contract = new web3.eth.Contract(abi, address)
   }
 
-  async read(method, args, block) {
+  async read(method, args = [], block) {
     return new Promise((resolve, reject) => {
-      this.contract.methods[method](...args).call(
-        {},
-        block,
-        (err, response) => {
-          if (err) {
-            return reject(new Error(err.message))
-          }
-          if (response.c && response.c.length) {
-            return resolve(response.c)
-          }
-          resolve(response)
-          // resolve(response.c?.[0] ?? response);
+      const args2 = [{}]
+      if (block) args2.push(block)
+      this.contract.methods[method](...args).call(...args2, (err, response) => {
+        if (err) {
+          return reject(new Error(err.message))
         }
-      )
+        if (response.c && response.c.length) {
+          return resolve(response.c)
+        }
+        resolve(response)
+        // resolve(response.c?.[0] ?? response);
+      })
     })
   }
 }

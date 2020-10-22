@@ -1,9 +1,8 @@
 require("dotenv").config()
-const Redis = require("../src/redis")
+const redis = require("../src/redis")
 const moment = require("moment")
 
 ;(async function () {
-  const redis = Redis()
   const from = moment.unix(1602656240)
   const to = moment(from).add(1, "days")
   console.log(from.unix(), to.unix())

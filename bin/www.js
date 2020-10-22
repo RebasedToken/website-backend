@@ -20,7 +20,7 @@ app.get("/", apiLimiter, async (req, res) => {
   res.json(await getStats())
 })
 app.get("/total-supply", apiLimiter, async (req, res) => {
-  res.json(await getTotalSupply())
+  res.json({totalSuppy: await getTotalSupply()})
 })
 app.listen(port, () => {
   console.log(`listening on port ${port}`)

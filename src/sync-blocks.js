@@ -1,4 +1,4 @@
-const Redis = require("./redis")
+const redis = require("./redis")
 const Batch = require("batch")
 const {web3, contracts} = require("./contracts")
 
@@ -7,8 +7,6 @@ const MAX_THREADS = 9
 const FIRST_BLOCK = 11052142 // rebasedOracle creation block
 
 module.exports = async function () {
-  const redis = Redis()
-
   const latestBlock = await web3.eth.getBlockNumber()
 
   const startingBlock = FIRST_BLOCK

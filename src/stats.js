@@ -1,9 +1,7 @@
 const moment = require("moment")
 const BN = require("bn.js")
-const Redis = require("./redis")
+const redis = require("./redis")
 const {web3, contracts} = require("./contracts")
-
-const redis = Redis()
 
 exports.getStats = async function () {
   const data = {}

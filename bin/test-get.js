@@ -1,3 +1,4 @@
+require("dotenv").config()
 const Redis = require("../src/redis")
 const moment = require("moment")
 

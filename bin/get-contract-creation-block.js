@@ -1,3 +1,4 @@
+require("dotenv").config()
 const {Web3} = require("../src/web3")
 const Batch = require("batch")
 

@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "www",
+      name: "backend",
       script: "sudo node ./bin/www.js",
       autorestart: true,
       watch: true,

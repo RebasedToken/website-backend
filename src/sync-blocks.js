@@ -1,20 +1,24 @@
 const redis = require("./redis")
 const Batch = require("batch")
-const {web3, contracts} = require("./contracts")
+const {web3, contracts, FIRST_BLOCK} = require("./contracts")
 
 const MAX_THREADS = 9
 
-const FIRST_BLOCK = 11052142 // rebasedOracle creation block
-
-module.exports = async function () {
+module.exports = async function (onCurrent) {
   const latestBlock = await web3.eth.getBlockNumber()
-
-  const startingBlock = FIRST_BLOCK
-  const stoppingBlock = latestBlock
-
+  
   let blocks = []
-  for (let block = startingBlock; block <= stoppingBlock; block++) {
-    blocks.push(block.toString())
+  if (onCurrent) {
+    blocks.push(latestBlock);
+    for (let i = 0; i <= 120; i++) { // infura allows only upto 120 blocks
+      blocks.push((latestBlock - i).toString())
+    }
+  } else {
+    const startingBlock = FIRST_BLOCK
+    const stoppingBlock = latestBlock
+    for (let block = startingBlock; block <= stoppingBlock; block++) {
+      blocks.push(block.toString())
+    }
   }
 
   const existsInRedis = await redis("mget", blocks)

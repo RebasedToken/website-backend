@@ -1,6 +1,10 @@
+const moment = require('moment');
 const {Web3, Contract} = require("./web3")
 
 exports.Web3 = Web3
+
+exports.FIRST_BLOCK = 11052142 // rebasedOracle creation block
+exports.FIRST_BLOCK_DATE = moment.utc('2020-10-14 06:17:24');
 
 const web3 = (exports.web3 = Web3())
 

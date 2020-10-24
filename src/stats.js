@@ -1,7 +1,7 @@
 const moment = require("moment")
 const BN = require("bn.js")
 const redis = require("./redis")
-const {web3, contracts} = require("./contracts")
+const {web3, contracts, FIRST_BLOCK_DATE} = require("./contracts")
 
 exports.getStats = async function () {
   const data = {}
@@ -31,7 +31,8 @@ async function get30d() {
     return {x, from, to}
   }
 
-  return get(30, getFromToForInterval)
+  const diff = moment.utc().diff(FIRST_BLOCK_DATE, 'days');
+  return get(diff > 30 ? 30 : diff, getFromToForInterval)
 }
 
 async function getAll() {
@@ -43,7 +44,8 @@ async function getAll() {
     return {x, from, to}
   }
 
-  return get(60, getFromToForInterval)
+  const diff = moment.utc().diff(FIRST_BLOCK_DATE, 'days');
+  return get(diff > 60 ? 60 : diff, getFromToForInterval)
 }
 
 async function get(intervals, getFromToForInterval) {

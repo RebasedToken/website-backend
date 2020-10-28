@@ -75,9 +75,11 @@ async function get(intervals, getFromToForInterval) {
       supply = supply.div(len)
     } catch (e) {}
 
-    xs.unshift(x)
-    prices.unshift(web3.utils.fromWei(price, "ether").toString())
-    supplies.unshift(web3.utils.fromWei(supply, "gwei").toString())
+    if (!(price.isZero() || supply.isZero())) {
+      xs.unshift(x)
+      prices.unshift(web3.utils.fromWei(price, "ether").toString())
+      supplies.unshift(web3.utils.fromWei(supply, "gwei").toString())
+    }
   }
 
   return {x: xs, p: prices, s: supplies}

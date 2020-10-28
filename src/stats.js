@@ -15,7 +15,7 @@ async function get1d() {
   const getFromToForInterval = (i) => {
     const to = moment.utc().endOf("hour").add(-i, "hours")
     const from = moment(to).add(-1, "hours")
-    const x = to.format("hh:mm")
+    const x = moment(to).add(1, 'minutes').format("hh:mm")
     return {x, from, to}
   }
 

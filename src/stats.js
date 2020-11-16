@@ -4,25 +4,26 @@ const redis = require("./redis")
 const {web3, contracts, FIRST_BLOCK_DATE} = require("./contracts")
 
 exports.getStats = async function () {
+  const burntAmount = bn(await getBurntAmount());
   const data = {}
-  data["1d"] = await get1d()
-  data["30d"] = await get30d()
-  data["all"] = await getAll()
+  data["1d"] = await get1d(burntAmount)
+  data["30d"] = await get30d(burntAmount)
+  data["all"] = await getAll(burntAmount)
   return data
 }
 
-async function get1d() {
+async function get1d(burntAmount) {
   const getFromToForInterval = (i) => {
     const to = moment.utc().endOf("hour").add(-i, "hours")
     const from = moment(to).add(-1, "hours")
-    const x = moment(to).add(1, 'minutes').format("hh:mm")
+    const x = moment(to).add(1, "minutes").format("hh:mm")
     return {x, from, to}
   }
 
-  return get(24, getFromToForInterval)
+  return get(24, getFromToForInterval, burntAmount)
 }
 
-async function get30d() {
+async function get30d(burntAmount) {
   const getFromToForInterval = (i) => {
     const day = moment.utc().add(-i, "days")
     const from = moment(day).startOf("day")
@@ -31,11 +32,11 @@ async function get30d() {
     return {x, from, to}
   }
 
-  const diff = moment.utc().diff(FIRST_BLOCK_DATE, 'days');
-  return get(diff > 30 ? 30 : diff, getFromToForInterval)
+  const diff = moment.utc().diff(FIRST_BLOCK_DATE, "days")
+  return get(diff > 30 ? 30 : diff, getFromToForInterval, burntAmount)
 }
 
-async function getAll() {
+async function getAll(burntAmount) {
   const getFromToForInterval = (i) => {
     const day = moment.utc().add(-i, "days")
     const from = moment(day).startOf("day")
@@ -44,11 +45,11 @@ async function getAll() {
     return {x, from, to}
   }
 
-  const diff = moment.utc().diff(FIRST_BLOCK_DATE, 'days');
-  return get(diff > 60 ? 60 : diff, getFromToForInterval)
+  const diff = moment.utc().diff(FIRST_BLOCK_DATE, "days")
+  return get(diff > 60 ? 60 : diff, getFromToForInterval, burntAmount)
 }
 
-async function get(intervals, getFromToForInterval) {
+async function get(intervals, getFromToForInterval, burntAmount) {
   const xs = []
   const prices = []
   const supplies = []
@@ -78,16 +79,22 @@ async function get(intervals, getFromToForInterval) {
     if (!(price.isZero() || supply.isZero())) {
       xs.unshift(x)
       prices.unshift(web3.utils.fromWei(price, "ether").toString())
-      supplies.unshift(web3.utils.fromWei(supply, "gwei").toString())
+      supplies.unshift(web3.utils.fromWei(supply.sub(burntAmount), "gwei").toString())
     }
   }
 
   return {x: xs, p: prices, s: supplies}
 }
 
-exports.getTotalSupply = async function () {
-  const supply = await contracts.rebasedV2.contract.read("totalSupply")
-  return parseInt(web3.utils.fromWei(supply, "gwei").toString())
+const getBurntAmount = exports.getBurntAmount = function () {
+  return contracts.rebasedV2.contract.read("balanceOf", ["0x000000000000000000000000000000000000dead"]);
+}
+
+const getTotalSupply = exports.getTotalSupply = async function () {
+  let a = await contracts.rebasedV2.contract.read("totalSupply")
+  let b = await getBurntAmount();
+  [a, b] = [a, b].map(x => parseFloat(web3.utils.fromWei(x, "gwei").toString()));
+  return a - b;
 }
 
 function bn(n) {

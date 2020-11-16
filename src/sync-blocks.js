@@ -6,11 +6,12 @@ const MAX_THREADS = 9
 
 module.exports = async function (onCurrent) {
   const latestBlock = await web3.eth.getBlockNumber()
-  
+
   let blocks = []
   if (onCurrent) {
-    blocks.push(latestBlock);
-    for (let i = 0; i <= 120; i++) { // infura allows only upto 120 blocks
+    blocks.push(latestBlock)
+    for (let i = 0; i <= 120; i++) {
+      // infura allows only upto 120 blocks
       blocks.push((latestBlock - i).toString())
     }
   } else {
